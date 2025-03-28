@@ -1,5 +1,5 @@
 [project]
-name = "mcp-webcam"
+name = "videocapture-mcp"
 version = "0.1.0"
 description = "Model Context Protocol (MCP) server to capture from an OpenCV-compatible webcam"
 readme = "README.md"
@@ -9,3 +9,9 @@ dependencies = [
     "mcp[cli]>=1.4.1",
     "opencv-python>=4.11.0.86",
 ]
+
+[[project.authors]]
+name = "13rac1"
+
+[project.scripts]
+videocapture_mcp = "videocapture_mcp.main"
