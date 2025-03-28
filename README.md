@@ -1,10 +1,24 @@
-# Webcam MCP
+# Video Still Capture MCP
 
 **A Model Context Protocol server for accessing and controlling webcams via OpenCV**
 
 ## Overview
 
-Webcam MCP is a Python implementation of the Model Context Protocol (MCP) that provides AI assistants with the ability to access and control webcams and video sources through OpenCV. This server exposes a set of tools that allow language models to capture images, manipulate camera settings, and manage video connections.
+Video Still Capture MCP is a Python implementation of the Model Context Protocol (MCP) that provides AI assistants with the ability to access and control webcams and video sources through OpenCV. This server exposes a set of tools that allow language models to capture images, manipulate camera settings, and manage video connections. There is no video capture.
+
+## Examples
+
+Here are some examples of the Video Still Capture  MCP server in action:
+
+### Orange Example
+Left: Claude's view of the image | Right: Actual webcam capture
+:-------------------------:|:-------------------------:
+![Claude's view of orange](images/orange-claude.png) | ![Webcam capture of orange](images/orange-webcam.jpg)
+
+### Magnet Example
+Left: Claude's view of the image | Right: Actual webcam capture
+:-------------------------:|:-------------------------:
+![Claude's view of magnet](images/magnet-claude.png) | ![Webcam capture of magnet](images/magnet-webcam.jpg)
 
 ## Installation
 
@@ -18,15 +32,15 @@ Webcam MCP is a Python implementation of the Model Context Protocol (MCP) that p
 ### Installation from source
 
 ```bash
-git clone https://github.com/13rac1/webcam-mcp.git
-cd webcam-mcp
+git clone https://github.com/13rac1/videocapture-mcp.git
+cd videocapture-mcp
 pip install -e .
 ```
 
 Run the MCP server:
 
 ```bash
-mcp dev webcam_mcp.py
+mcp dev videocapture_mcp.py
 ```
 
 ## Integrating with Claude for Desktop
@@ -47,7 +61,7 @@ Add this MCP server configuration:
 ```json
 {
   "mcpServers": {
-    "webcam-mcp": {
+    "VideoCapture ": {
       "command": "uv",
       "args": [
         "run",
@@ -66,7 +80,7 @@ Add this MCP server configuration:
 }
 ```
 
-Ensure you replace `/ABSOLUTE_PATH/webcam-mcp` with your project's absolute path.
+Ensure you replace `/ABSOLUTE_PATH/videocapture-mcp` with the project's absolute path.
 
 ### Windows
 
@@ -81,7 +95,7 @@ Add this MCP server configuration:
 ```json
 {
   "mcpServers": {
-    "webcam-mcp": {
+    "VideoCapture": {
       "command": "uv",
       "args": [
         "run",
@@ -100,7 +114,7 @@ Add this MCP server configuration:
 }
 ```
 
-Ensure you replace `C:\ABSOLUTE_PATH\videocapture-mcp` with your project's absolute path.
+Ensure you replace `C:\ABSOLUTE_PATH\videocapture-mcp` with the project's absolute path.
 
 ### Using the Installation Command
 
@@ -110,9 +124,9 @@ Alternatively, you can use the `mcp` CLI to install the server:
 mcp install videocapture_mcp.py
 ```
 
-This will automatically configure Claude Desktop to use your webcam MCP server.
+This will automatically configure Claude Desktop to use your videocapture MCP server.
 
-Once integrated, Claude will be able to access your webcam when requested. Simply ask Claude to take a photo or perform any webcam-related task.
+Once integrated, Claude will be able to access your webcam or video source when requested. Simply ask Claude to take a photo or perform any webcam-related task.
 
 ## Features
 
