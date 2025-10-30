@@ -220,7 +220,7 @@ def list_active_connections() -> list:
     """
     return list(active_captures.keys())
 
-    mcp.run(transport='stdio')
+    mcp.run(transport="streamable-http", host="10.253.55.134", port="9001")
 
 # For: $ mcp run videocapture_mcp.py
 def run():
