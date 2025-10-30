@@ -4,7 +4,8 @@ from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict
-from mcp.server.fastmcp import FastMCP, Image
+from fastmcp import Context, FastMCP
+from fastmcp.utilities.types import Image
 
 # Store active video capture objects
 active_captures: Dict[str, cv2.VideoCapture] = {}
@@ -30,10 +31,11 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
         active_captures.clear()
 
 # Initialize the FastMCP server with lifespan
-mcp = FastMCP("VideoCapture", 
-              description="Provides access to camera and video streams via OpenCV",
-              dependencies=["opencv-python", "numpy"],
-              lifespan=app_lifespan)
+# mcp = FastMCP("VideoCapture",
+#               description="Provides access to camera and video streams via OpenCV",
+#               dependencies=["opencv-python", "numpy"],
+#               lifespan=app_lifespan)
+mcp = FastMCP("VideoCapture")
 
 def main():
     """Main entry point for the VideoCapture Server"""
