@@ -38,7 +38,7 @@ mcp = FastMCP("VideoCapture",
 def main():
     """Main entry point for the VideoCapture Server"""
 
-    mcp.run()
+    mcp.run(transport="streamable-http", host="10.253.55.134", port="9001")
     
 @mcp.tool()
 def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
@@ -219,8 +219,6 @@ def list_active_connections() -> list:
         List of active connection IDs
     """
     return list(active_captures.keys())
-
-    mcp.run(transport="streamable-http", host="10.253.55.134", port="9001")
 
 # For: $ mcp run videocapture_mcp.py
 def run():
