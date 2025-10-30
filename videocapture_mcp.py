@@ -75,7 +75,7 @@ def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
     finally:
         # Close the connection if we opened it temporarily
         if temp_connection:
-            close_connection(device_key)
+            _close_connection(device_key)
 
 @mcp.tool()
 def open_camera(device_index: int = 0, name: Optional[str] = None) -> str:
@@ -199,6 +199,8 @@ def set_video_property(connection_id: str, property_name: str, value: float) -> 
 
 @mcp.tool()
 def close_connection(connection_id: str) -> bool:
+    return _close_connection(connection_id)
+def _close_connection(connection_id: str) -> bool:
     """
     Close a video connection and release resources.
     
