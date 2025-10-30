@@ -65,7 +65,7 @@ def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
     # If device is not already open, open it temporarily
     temp_connection = False
     if device_key is None:
-        device_key = open_camera(device_index)
+        device_key = _open_camera(device_index)
         temp_connection = True
     
     try:
@@ -79,6 +79,9 @@ def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
 
 @mcp.tool()
 def open_camera(device_index: int = 0, name: Optional[str] = None) -> str:
+    return _open_camera(device_index, name)
+
+def _open_camera(device_index: int = 0, name: Optional[str] = None) -> str:
     """
     Open a connection to a camera device.
     
