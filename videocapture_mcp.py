@@ -70,7 +70,7 @@ def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
     
     try:
         # Capture the frame
-        frame = capture_frame(device_key, flip)
+        frame = _capture_frame(device_key, flip)
         return frame
     finally:
         # Close the connection if we opened it temporarily
@@ -79,6 +79,16 @@ def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
 
 @mcp.tool()
 def open_camera(device_index: int = 0, name: Optional[str] = None) -> str:
+    """
+        Open a connection to a camera device.
+
+        Args:
+            device_index: Camera index (0 is usually the default webcam)
+            name: Optional name to identify this camera connection
+
+        Returns:
+            Connection ID for the opened camera
+        """
     return _open_camera(device_index, name)
 
 def _open_camera(device_index: int = 0, name: Optional[str] = None) -> str:
@@ -102,8 +112,22 @@ def _open_camera(device_index: int = 0, name: Optional[str] = None) -> str:
     active_captures[name] = cap
     return name
 
+
 @mcp.tool()
 def capture_frame(connection_id: str, flip: bool = False) -> Image:
+    """
+    Capture a single frame from the specified video source.
+
+    Args:
+        connection_id: ID of the previously opened video connection
+        flip: Whether to horizontally flip the image
+
+    Returns:
+        The captured frame as an Image object
+    """
+    return  _capture_frame(connection_id, flip)
+
+def _capture_frame(connection_id: str, flip: bool = False) -> Image:
     """
     Capture a single frame from the specified video source.
     
@@ -199,7 +223,17 @@ def set_video_property(connection_id: str, property_name: str, value: float) -> 
 
 @mcp.tool()
 def close_connection(connection_id: str) -> bool:
+    """
+        Close a video connection and release resources.
+
+        Args:
+            connection_id: ID of the connection to close
+
+        Returns:
+            True if successful
+        """
     return _close_connection(connection_id)
+
 def _close_connection(connection_id: str) -> bool:
     """
     Close a video connection and release resources.
