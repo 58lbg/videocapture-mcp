@@ -10,6 +10,7 @@ dependencies = [
     "mcp[cli]>=1.4.1",
     "opencv-python>=4.11.0.86",
     "websocket-client>=1.8.0",
+    "requests>=2.31.0,<3.0.0",
 ]
 
 [[project.authors]]
