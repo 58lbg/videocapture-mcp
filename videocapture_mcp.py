@@ -1,3 +1,6 @@
+import tempfile
+from pathlib import Path
+
 import cv2
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
@@ -6,6 +9,7 @@ from datetime import datetime
 from typing import Optional, Dict
 from fastmcp import Context, FastMCP
 from fastmcp.utilities.types import Image
+import requests
 
 # Store active video capture objects
 active_captures: Dict[str, cv2.VideoCapture] = {}
@@ -41,7 +45,64 @@ def main():
     """Main entry point for the VideoCapture Server"""
 
     mcp.run(transport="streamable-http", host="10.253.55.134", port=9001)
-    
+
+
+@mcp.tool()
+def quick_capture_url(device_index: int = 0, flip: bool = False) -> str:
+    """
+    Quickly open a camera, capture a single frame, and close it.
+    If the camera is already open, use the existing connection.
+
+    Args:
+        device_index: Camera index (0 is usually the default webcam)
+        flip: Whether to horizontally flip the image
+
+    Returns:
+        The Image url address
+    """
+    # 1️⃣ 捕获图片
+    image: Image = _quick_capture(device_index=device_index, flip=flip)
+
+    # 2️⃣ 创建临时文件
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
+        tmp_path = Path(tmp_file.name)
+        # 3️⃣ 写入 PNG bytes
+        tmp_file.write(image.data)
+
+    # 4️⃣ 上传到 WOS
+    url = upload_to_wos(str(tmp_path))
+
+    # 5️⃣ 删除临时文件
+    try:
+        tmp_path.unlink()
+    except Exception:
+        pass
+
+    return url
+
+def _quick_capture(device_index: int = 0, flip: bool = False) -> Image:
+    # Check if this device is already open
+    device_key = None
+    for key, cap in active_captures.items():
+        if key.startswith(f"camera_{device_index}_"):
+            device_key = key
+            break
+
+    # If device is not already open, open it temporarily
+    temp_connection = False
+    if device_key is None:
+        device_key = _open_camera(device_index)
+        temp_connection = True
+
+    try:
+        # Capture the frame
+        frame = _capture_frame(device_key, flip)
+        return frame
+    finally:
+        # Close the connection if we opened it temporarily
+        if temp_connection:
+            _close_connection(device_key)
+
 @mcp.tool()
 def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
     """
@@ -55,27 +116,7 @@ def quick_capture(device_index: int = 0, flip: bool = False) -> Image:
     Returns:
         The captured frame as an Image object
     """
-    # Check if this device is already open
-    device_key = None
-    for key, cap in active_captures.items():
-        if key.startswith(f"camera_{device_index}_"):
-            device_key = key
-            break
-    
-    # If device is not already open, open it temporarily
-    temp_connection = False
-    if device_key is None:
-        device_key = _open_camera(device_index)
-        temp_connection = True
-    
-    try:
-        # Capture the frame
-        frame = _capture_frame(device_key, flip)
-        return frame
-    finally:
-        # Close the connection if we opened it temporarily
-        if temp_connection:
-            _close_connection(device_key)
+    return _quick_capture(device_index, flip)
 
 @mcp.tool()
 def open_camera(device_index: int = 0, name: Optional[str] = None) -> str:
@@ -260,6 +301,25 @@ def list_active_connections() -> list:
         List of active connection IDs
     """
     return list(active_captures.keys())
+
+def upload_to_wos(file_path) -> str:
+    # logger_debug_msg(f'文件开始上传 文件地址: {file_path} ')
+
+    serverUrl = "https://ireview.58corp.com/api/aigc/uploadVideo"
+    print('upload_to_wos: ', file_path);
+    with open(file_path, "rb") as f:
+        files = {
+            "file": f,
+        }
+        uploadRes = requests.post(serverUrl, files=files)
+        print(uploadRes.text)
+        resUploadObj = uploadRes.json()
+        print('resUploadObj', resUploadObj);
+        resource_url = resUploadObj['data']['url']
+        print('resource_url', resource_url);
+        # logger_debug_msg(f'文件开始结束 网址 resource_url: {resource_url} ')
+
+    return resource_url
 
 # For: $ mcp run videocapture_mcp.py
 def run():
