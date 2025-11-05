@@ -11,6 +11,12 @@ from fastmcp import Context, FastMCP
 from fastmcp.utilities.types import Image
 import requests
 
+import pyttsx3
+import sounddevice as sd
+from scipy.io.wavfile import write
+import tempfile
+import os
+
 # Store active video capture objects
 active_captures: Dict[str, cv2.VideoCapture] = {}
 
@@ -46,6 +52,36 @@ def main():
 
     mcp.run(transport="streamable-http", host="10.253.55.134", port=9001)
 
+
+@mcp.tool()
+def record_speech(duration=5, samplerate=16000) -> str:
+    """
+    Record audio using a microphone, upload it to the internet, and finally return the file address.
+
+    Args:
+        duration (int): Recording duration, in seconds
+        samplerate (int): sampling rate
+
+    Returns:
+        str: the audio file url
+    """
+    # 1️⃣ TTS 提示
+    tts_engine = pyttsx3.init()
+    tts_engine.say("请说话")
+    tts_engine.runAndWait()
+
+    # 2️⃣ 录音
+    print(f"开始录音，时长 {duration} 秒...")
+    audio = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1)
+    sd.wait()  # 等待录音结束
+
+    # 3️⃣ 保存到临时文件
+    temp_dir = tempfile.gettempdir()
+    temp_file = os.path.join(temp_dir, "speech_input.wav")
+    write(temp_file, samplerate, audio)  # 保存 WAV
+    print(f"录音已保存到：{temp_file}")
+
+    return upload_to_wos(temp_file)
 
 @mcp.tool()
 def quick_capture_url(device_index: int = 0, flip: bool = False) -> str:
@@ -316,7 +352,7 @@ def upload_to_wos(file_path) -> str:
         resUploadObj = uploadRes.json()
         print('resUploadObj', resUploadObj);
         resource_url = resUploadObj['data']['url']
-        print('resource_url', resource_url);
+        print('resource_url: ', resource_url);
         # logger_debug_msg(f'文件开始结束 网址 resource_url: {resource_url} ')
 
     return resource_url
@@ -327,3 +363,4 @@ def run():
 
 if __name__ == "__main__":
     main()
+    # record_speech(duration=20)
