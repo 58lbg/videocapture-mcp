@@ -17,6 +17,14 @@ from scipy.io.wavfile import write
 import tempfile
 import os
 
+from funasr import AutoModel
+
+# 1️⃣ 加载模型（第一次会自动下载）
+model = AutoModel(model="paraformer-zh",  # 中文模型
+                  vad_model="fsmn-vad",   # 语音活动检测
+                  punc_model="ct-punc")   # 自动加标点
+
+
 # Store active video capture objects
 active_captures: Dict[str, cv2.VideoCapture] = {}
 
@@ -50,10 +58,26 @@ mcp = FastMCP("VideoCapture")
 def main():
     """Main entry point for the VideoCapture Server"""
 
-    mcp.run(transport="streamable-http", host="10.253.55.134", port=9001)
-
+    # mcp.run(transport="streamable-http", host="10.253.55.134", port=9001)
+    mcp.run(transport="streamable-http", host="10.253.69.100", port=9001)
 
 @mcp.tool()
+def agent_result(text: str) -> bool:
+    """
+        Play the result for the user to listen to
+
+        Args:
+            text (str): The play of content
+        Returns:
+            bool: is played
+    """
+    print(f"agent result：{text}")
+    tts_engine = pyttsx3.init()
+    tts_engine.say(text)
+    tts_engine.runAndWait()
+    return True
+
+# @mcp.tool()
 def record_speech(duration=5, samplerate=16000) -> str:
     """
     Record audio using a microphone, upload it to the internet, and finally return the file address.
@@ -65,6 +89,30 @@ def record_speech(duration=5, samplerate=16000) -> str:
     Returns:
         str: the audio file url
     """
+    return upload_to_wos(_record_speech(duration, samplerate))
+
+@mcp.tool()
+def record_speech_text(duration=5, samplerate=16000) -> str:
+    """
+    Record for a duration using a microphone and convert it into text
+
+    Args:
+        duration (int): Recording duration, in seconds
+        samplerate (int): sampling rate
+
+    Returns:
+        str: the text from record
+    """
+    file = _record_speech(duration, samplerate)
+    # 2️⃣ 识别语音文件
+    res = model.generate(input=file)
+
+    # 3️⃣ 输出文字结果
+    text = res[0]['text']
+    print(text)
+    return text
+
+def _record_speech(duration=5, samplerate=16000) -> str:
     # 1️⃣ TTS 提示
     tts_engine = pyttsx3.init()
     tts_engine.say("请说话")
@@ -80,8 +128,7 @@ def record_speech(duration=5, samplerate=16000) -> str:
     temp_file = os.path.join(temp_dir, "speech_input.wav")
     write(temp_file, samplerate, audio)  # 保存 WAV
     print(f"录音已保存到：{temp_file}")
-
-    return upload_to_wos(temp_file)
+    return temp_file
 
 @mcp.tool()
 def quick_capture_url(device_index: int = 0, flip: bool = False) -> str:

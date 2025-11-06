@@ -14,6 +14,11 @@ dependencies = [
     "pyttsx3>=2.90",
     "sounddevice",
     "scipy",
+    "funasr>=1.0.27",
+    "modelscope>=1.13.3",
+    "torch>=2.1.0",
+    "soundfile>=0.12.1",
+    "torchaudio",
 ]
 
 [[project.authors]]

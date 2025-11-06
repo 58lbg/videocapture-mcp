@@ -1,0 +1,7 @@
+使用mcp的record_speech_text调用系统录音录制内容，并尽量回答用户的问题，输出的文本使用mcp播放出来
+使用mcp的record_speech_text调用系统录音录制内容，返回结果只需要录制的内容，不需要其他
+
+
+满足用户输入的内容，把结果通过mcp的agent_result播放出来
+
+使用mcp的record_speech_text获取文字并回答对应的问题，并且使用agent_result将结果播放出来。播放回答完了，再使用record_speech_text获取问题循环起来，和用户形成对答，直到用户不回复或者表示完成了。使用中文进行回复问题
