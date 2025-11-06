@@ -58,8 +58,8 @@ mcp = FastMCP("VideoCapture")
 def main():
     """Main entry point for the VideoCapture Server"""
 
-    # mcp.run(transport="streamable-http", host="10.253.55.134", port=9001)
-    mcp.run(transport="streamable-http", host="10.253.69.100", port=9001)
+    mcp.run(transport="streamable-http", host="10.253.55.134", port=9001)
+    # mcp.run(transport="streamable-http", host="10.253.69.100", port=9001)
 
 @mcp.tool()
 def agent_result(text: str) -> bool:
