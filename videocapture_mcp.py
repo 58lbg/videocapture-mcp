@@ -54,7 +54,6 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
 #               dependencies=["opencv-python", "numpy"],
 #               lifespan=app_lifespan)
 mcp = FastMCP("VideoCapture")
-
 def main():
     """Main entry point for the VideoCapture Server"""
 
