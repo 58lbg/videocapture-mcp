@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "ros-mcp-server-http": {
+      "name": "ROS-MCP Server (http)",
+      "transport": "http",
+      "url": "http://10.253.55.134:9000/mcp"
+    },
+    "video-mcp-server-http": {
+      "name": "video-MCP Server (http)",
+      "transport": "http",
+      "url": "http://10.253.69.100:9001/mcp"
+    },
+    "my-mcp": {
+      "name": "file_read",
+      "transport": "http",
+      "url": "http://10.253.69.100:9002/mcp"
+    }
+
+  }
+}
